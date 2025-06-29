@@ -1,0 +1,10 @@
+PUT http://localhost:8080/wallet/ HTTP/1.1
+content-type: application/json
+
+{
+    "name": "john"
+}
+
+###
+GET http://localhost:8080/wallet/43d3f48c-5b3c-4dd6-9adc-dc52b37e5470 HTTP/1.1
+content-type: application/json
