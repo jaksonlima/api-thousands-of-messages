@@ -36,7 +36,6 @@ class TransactionTest : UnitTest() {
         assertEquals(expectedCategoryId, result.categoryId)
         assertNotNull(result.createdAt)
         assertNotNull(result.updatedAt)
-        assertNull(result.deletedAt)
     }
 
     @Test

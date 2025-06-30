@@ -14,7 +14,6 @@ class Transaction(
     val categoryId: CategoryID,
     val createdAt: Instant,
     val updatedAt: Instant,
-    val deletedAt: Instant? = null
 ) : Aggregate<TransactionID>(id) {
 
     init {
@@ -26,7 +25,6 @@ class Transaction(
         assertArgumentNotNull(categoryId) { "'categoryId' should not be null." }
         assertArgumentNotNull(createdAt) { "'createdAt' should not be null." }
         assertArgumentNotNull(updatedAt) { "'updatedAt' should not be null." }
-        assertArgumentNull(deletedAt == null) { "'deletedAt' should be null." }
     }
 
     companion object {
