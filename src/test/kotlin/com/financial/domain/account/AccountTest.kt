@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class AccountTest : UnitTest() {
@@ -20,9 +21,11 @@ class AccountTest : UnitTest() {
 
         //then
         assertNotNull(account.id())
+        assertTrue(account.domainEvents().isNotEmpty())
         assertEquals(expectedName, account.name)
         assertNotNull(account.createdAt)
         assertNotNull(account.updatedAt)
+        assertNull(account.deletedAt)
     }
 
     @Test
