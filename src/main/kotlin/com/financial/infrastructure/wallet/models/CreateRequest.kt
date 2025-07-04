@@ -1,9 +1,9 @@
 package com.financial.infrastructure.wallet.models
 
-import com.financial.application.wallet.create.CreateWalletUseCase
+import com.financial.application.wallet.WalletCreateUseCase
 
 data class CreateRequest(
     val name: String,
-) : CreateWalletUseCase.Input {
+) : WalletCreateUseCase.Input {
     override fun name(): String = this.name
 }

@@ -1,6 +1,6 @@
 package com.financial.infrastructure.wallet.models
 
-import com.financial.application.wallet.retrive.get.GetWalletUseCase
+import com.financial.application.wallet.WalletGetUseCase
 import java.time.Instant
 
 data class FindByIdResponse(
@@ -10,9 +10,9 @@ data class FindByIdResponse(
     val createdAt: Instant,
     val updatedAt: Instant,
     val deletedAt: Instant? = null
-) : GetWalletUseCase.Output {
+) : WalletGetUseCase.Output {
     companion object {
-        fun from(output: GetWalletUseCase.Output): FindByIdResponse {
+        fun from(output: WalletGetUseCase.Output): FindByIdResponse {
             return FindByIdResponse(
                 id = output.id(),
                 name = output.name(),

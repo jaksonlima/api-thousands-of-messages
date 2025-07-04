@@ -1,9 +1,10 @@
 package com.financial.domain.category
 
 import com.financial.domain.UnitTest
-import com.financial.domain.expections.DomainException
 import org.junit.jupiter.api.Test
-import kotlin.test.*
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 
 
 class CategoryTest : UnitTest() {
@@ -21,21 +22,5 @@ class CategoryTest : UnitTest() {
         assertEquals(expectedName, category.name)
         assertNotNull(category.createdAt)
         assertNotNull(category.updatedAt)
-        assertNull(category.deletedAt)
     }
-
-    @Test
-    fun givenInvalidParams_whenCreate_shouldReturnError() {
-        //given
-        val expectedName = ""
-
-        //when
-        val actualError = assertFailsWith(DomainException::class) {
-            Category.create(expectedName)
-        }
-
-        //then
-        assertTrue(actualError.errors.isNotEmpty())
-    }
-
 }

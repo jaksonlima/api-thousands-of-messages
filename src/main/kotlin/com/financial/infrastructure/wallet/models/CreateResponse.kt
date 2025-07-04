@@ -1,12 +1,12 @@
 package com.financial.infrastructure.wallet.models
 
-import com.financial.application.wallet.create.CreateWalletUseCase
+import com.financial.application.wallet.WalletCreateUseCase
 
 data class CreateResponse(
     val id: String,
 ) {
     companion object {
-        fun from(output: CreateWalletUseCase.Output): CreateResponse {
+        fun from(output: WalletCreateUseCase.Output): CreateResponse {
             return CreateResponse(output.id())
         }
     }

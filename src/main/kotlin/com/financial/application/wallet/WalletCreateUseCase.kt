@@ -1,15 +1,15 @@
-package com.financial.application.wallet.create
+package com.financial.application.wallet
 
 import com.financial.application.UseCase
 import com.financial.domain.wallet.Wallet
 import com.financial.domain.wallet.WalletGateway
 
-class CreateWalletUseCase(
+class WalletCreateUseCase(
     private val walletGateway: WalletGateway
-) : UseCase<CreateWalletUseCase.Input, CreateWalletUseCase.Output> {
+) : UseCase<WalletCreateUseCase.Input, WalletCreateUseCase.Output> {
 
     override fun execute(input: Input): Output {
-        val wallet = Wallet.create(input.name())
+        val wallet = Wallet.Companion.create(input.name())
 
         this.walletGateway.create(wallet)
 

@@ -1,4 +1,4 @@
-package com.financial.application.wallet.retrive.get
+package com.financial.application.wallet
 
 import com.financial.application.UseCase
 import com.financial.domain.expections.NotFoundException
@@ -7,15 +7,15 @@ import com.financial.domain.wallet.WalletGateway
 import com.financial.domain.wallet.WalletID
 import java.time.Instant
 
-class GetWalletUseCase(
+class WalletGetUseCase(
     private val walletGateway: WalletGateway
-) : UseCase<String, GetWalletUseCase.Output> {
+) : UseCase<String, WalletGetUseCase.Output> {
 
     override fun execute(input: String): Output {
-        val walletId = WalletID.with(input)
+        val walletId = WalletID.Companion.with(input)
 
         val wallet = this.walletGateway.findById(walletId)
-            .orElseThrow { NotFoundException.with(Wallet::class, walletId) }
+            .orElseThrow { NotFoundException.Companion.with(Wallet::class, walletId) }
 
         return StdOutput(
             id = wallet.id().value().toString(),

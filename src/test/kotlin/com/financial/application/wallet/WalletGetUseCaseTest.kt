@@ -1,4 +1,4 @@
-package com.financial.application.wallet.retrive.get
+package com.financial.application.wallet
 
 import com.financial.application.UseCaseTest
 import com.financial.domain.Fixture
@@ -7,15 +7,17 @@ import com.financial.domain.wallet.WalletGateway
 import org.junit.jupiter.api.Test
 import org.mockito.InjectMocks
 import org.mockito.Mock
-import org.mockito.Mockito.`when`
+import org.mockito.Mockito
 import org.mockito.kotlin.any
-import java.util.*
-import kotlin.test.*
+import java.util.Optional
+import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
+import kotlin.test.assertNotNull
 
-class GetWalletUseCaseTest : UseCaseTest() {
+class WalletGetUseCaseTest : UseCaseTest() {
 
     @InjectMocks
-    lateinit var getWalletUseCase: GetWalletUseCase;
+    lateinit var walletGetUseCase: WalletGetUseCase;
 
     @Mock
     lateinit var gateway: WalletGateway;
@@ -27,10 +29,10 @@ class GetWalletUseCaseTest : UseCaseTest() {
         val id = expectedWallet.id()
 
         //when
-        `when`(this.gateway.findById(any()))
+        Mockito.`when`(this.gateway.findById(any()))
             .thenReturn(Optional.of(expectedWallet))
 
-        val resultWallet = this.getWalletUseCase.execute(expectedWallet.id().value().toString())
+        val resultWallet = this.walletGetUseCase.execute(expectedWallet.id().value().toString())
 
         //then
         assertEquals(id.value().toString(), resultWallet.id())
@@ -47,8 +49,8 @@ class GetWalletUseCaseTest : UseCaseTest() {
         val expectedWallet = Fixture.john()
 
         //when
-        val actualError =  assertFailsWith(NotFoundException::class) {
-            this.getWalletUseCase.execute(expectedWallet.id().value().toString())
+        val actualError = assertFailsWith(NotFoundException::class) {
+            this.walletGetUseCase.execute(expectedWallet.id().value().toString())
         }
 
         //then

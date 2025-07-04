@@ -7,8 +7,7 @@ class Category(
     id: CategoryID = CategoryID(),
     val name: String,
     val createdAt: Instant,
-    val updatedAt: Instant,
-    val deletedAt: Instant? = null
+    val updatedAt: Instant
 ) : Aggregate<CategoryID>(id) {
 
     init {
@@ -16,7 +15,6 @@ class Category(
         assertArgumentNotEmpty(name) { "'name' should not be null or empty." }
         assertArgumentNotNull(createdAt) { "'createdAt' should not be null." }
         assertArgumentNotNull(updatedAt) { "'updatedAt' should not be null." }
-        assertArgumentNull(deletedAt) { "'deletedAt' should be null." }
     }
 
     companion object {

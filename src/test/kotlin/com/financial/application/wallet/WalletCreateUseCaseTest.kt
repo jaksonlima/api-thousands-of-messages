@@ -1,6 +1,5 @@
-package com.financial.application.wallet.create
+package com.financial.application.wallet
 
-//import org.junit.jupiter.api.Assertions
 import com.financial.application.UseCaseTest
 import com.financial.domain.expections.DomainException
 import com.financial.domain.wallet.Wallet
@@ -9,7 +8,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertNotNull
 import org.mockito.InjectMocks
 import org.mockito.Mock
-import org.mockito.Mockito.`when`
+import org.mockito.Mockito
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.times
@@ -18,11 +17,10 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertTrue
 
-
-class CreateWalletUseCaseTest : UseCaseTest() {
+class WalletCreateUseCaseTest : UseCaseTest() {
 
     @InjectMocks
-    lateinit var useCase: CreateWalletUseCase;
+    lateinit var useCase: WalletCreateUseCase;
 
     @Mock
     lateinit var gateway: WalletGateway
@@ -32,7 +30,7 @@ class CreateWalletUseCaseTest : UseCaseTest() {
         //
         val expectedName = "jack"
 
-        `when`(this.gateway.create(any()))
+        Mockito.`when`(this.gateway.create(any()))
             .thenAnswer { it.arguments[0] }
 
         //when
@@ -63,7 +61,7 @@ class CreateWalletUseCaseTest : UseCaseTest() {
     }
 
 
-    data class Input(val name: String) : CreateWalletUseCase.Input {
+    data class Input(val name: String) : WalletCreateUseCase.Input {
         override fun name(): String = this.name
     }
 }

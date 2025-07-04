@@ -23,4 +23,8 @@ class InMemoryAccountGateway(
 
         return account
     }
+
+    override fun getByIdAndDeletedAtIsNull(accountId: AccountID): Account? {
+        return db[accountId]?.takeIf { it.deletedAt === null }
+    }
 }
