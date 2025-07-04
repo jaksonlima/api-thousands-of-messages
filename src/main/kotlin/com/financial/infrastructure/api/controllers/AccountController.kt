@@ -3,15 +3,15 @@ package com.financial.infrastructure.api.controllers
 import com.financial.application.account.AccountCreateUseCase
 import com.financial.infrastructure.account.models.CreateRequest
 import com.financial.infrastructure.account.models.CreateResponse
+import com.financial.infrastructure.account.models.FindByIdResponse
 import com.financial.infrastructure.api.AccountAPI
-import com.financial.infrastructure.kafka.producers.AccountCreateProducer
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.RestController
 import java.net.URI
 
-//@RestController
+@RestController
 class AccountController(
     val accountCreateUseCase: AccountCreateUseCase,
-    val accountCreateProducer: AccountCreateProducer
 ) : AccountAPI {
 
     override fun create(account: CreateRequest): ResponseEntity<CreateResponse> {
@@ -21,7 +21,7 @@ class AccountController(
             .body(CreateResponse.from(result))
     }
 
-    override fun findById(id: String): ResponseEntity<com.financial.infrastructure.account.models.FindByIdResponse> {
+    override fun findById(id: String): ResponseEntity<FindByIdResponse> {
         TODO("Not yet implemented")
     }
 

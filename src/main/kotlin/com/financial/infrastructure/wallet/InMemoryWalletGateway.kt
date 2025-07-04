@@ -9,7 +9,9 @@ import java.util.concurrent.ConcurrentHashMap
 
 @Component
 class InMemoryWalletGateway : WalletGateway {
-    private val db: MutableMap<WalletID, Wallet> = ConcurrentHashMap()
+    companion object {
+        private val db: MutableMap<WalletID, Wallet> = ConcurrentHashMap()
+    }
 
     override fun create(wallet: Wallet): Wallet {
         db.put(wallet.id(), wallet)

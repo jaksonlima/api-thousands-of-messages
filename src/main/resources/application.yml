@@ -1,3 +1,11 @@
+kafka:
+  auto-create-topics: true
+  pool-timeout: 1_000
+  bootstrap-servers: localhost:9092
+  producers:
+    account:
+      topic: account.created
+
 spring:
   application.name: Financial
   datasource:
@@ -11,10 +19,5 @@ spring:
     properties:
       hibernate:
         format_sql: true
-  kafka:
-    auto-create-topics: false
-    pool-timeout: 1_000
-    bootstrap-servers: localhost:9092
-    producers:
-      account:
-        topic: account.created
+
+server.port: 8081

@@ -10,22 +10,19 @@ class Publisher<T>(
         private val log = LoggerFactory.getLogger(Publisher::class.java)
     }
 
-    fun register(subscriber: Subscriber<T>) {
-        subscribers.add(subscriber);
-    }
-
     fun publish(event: T): Boolean {
         var success = true
         for (subscriber in this.subscribers) {
-            log.error("On process [event:${event.toString()}] [subscriber:${subscriber::class.simpleName}]")
+            log.info("On processing [subscriber:${subscriber::class.simpleName}]")
             try {
                 if (subscriber.test(event)) {
                     subscriber.onEvent(event)
+                    log.info("Success processed [subscriber:${subscriber::class.simpleName}]")
                     return success
                 }
             } catch (t: Throwable) {
                 success = false;
-                log.error("Error process [event:${event.toString()}] [subscriber:${subscriber::class.simpleName}]")
+                log.error("Error processed [event:${event.toString()}] [subscriber:${subscriber::class.simpleName}]", t)
             }
         }
         return success

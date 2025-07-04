@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component
 
 @Component
 class KafkaProducer(
-    private val kafkaTemplate: KafkaTemplate<String, String>
+    private val kafkaTemplate: KafkaTemplate<String, Any>
 ) : Producer {
 
     override fun send(topic: String, message: String) {

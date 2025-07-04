@@ -1,7 +1,7 @@
 package com.financial.infrastructure.kafka.producers
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.financial.domain.account.Account
+import com.financial.domain.account.AccountCreateEvent
 import com.financial.infrastructure.configuration.annotations.AccountTopic
 import com.financial.infrastructure.kafka.Producer
 import com.financial.infrastructure.kafka.models.Topic
@@ -15,9 +15,8 @@ class AccountCreateProducer(
     private val objectMapper: ObjectMapper
 ) {
 
-    fun createAccount(account: Account) {
-        account.domainEvents().forEach {
-            this.producer.send(topic.name, objectMapper.writeValueAsString(it))
-        }
+    fun createAccount(account: AccountCreateEvent) {
+        val result = objectMapper.writeValueAsString(account)
+        producer.send(topic.name, result)
     }
 }

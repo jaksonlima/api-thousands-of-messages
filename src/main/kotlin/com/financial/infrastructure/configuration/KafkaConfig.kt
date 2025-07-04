@@ -3,6 +3,7 @@ package com.financial.infrastructure.configuration
 import com.financial.infrastructure.configuration.annotations.AccountTopic
 import com.financial.infrastructure.configuration.properties.KafkaProperties
 import com.financial.infrastructure.kafka.models.Topic
+import org.apache.kafka.clients.admin.NewTopic
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.clients.producer.ProducerConfig
 import org.apache.kafka.common.serialization.StringDeserializer
@@ -29,6 +30,14 @@ class KafkaConfig(
         topic: String
     ): Topic {
         return Topic(topic);
+    }
+
+    @Bean
+    fun accountCreatedTopic(
+        @AccountTopic
+        topic: Topic
+    ): NewTopic {
+        return NewTopic(topic.name, 1, 1)
     }
 
     @Bean
