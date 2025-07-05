@@ -8,12 +8,14 @@ class Tenant(
     id: TenantID = TenantID(),
     val accountId: AccountID,
     val createdAt: Instant,
+    val updatedAt: Instant,
 ) : Aggregate<TenantID>(id) {
 
     init {
         assertArgumentNotNull(id) { "'id' should not be null" }
         assertArgumentNotNull(accountId) { "'accountId' should not be null " }
         assertArgumentNotNull(createdAt) { "'createdAt' should not be null" }
+        assertArgumentNotNull(updatedAt) { "'updatedAt' should not be null" }
     }
 
     companion object {
@@ -24,6 +26,7 @@ class Tenant(
             return Tenant(
                 accountId = accountId,
                 createdAt = now,
+                updatedAt = now
             )
         }
 
@@ -31,12 +34,33 @@ class Tenant(
             id: TenantID = TenantID(),
             accountId: AccountID,
             createdAt: Instant,
+            updatedAt: Instant,
         ): Tenant {
             return Tenant(
                 id = id,
                 accountId = accountId,
                 createdAt = createdAt,
+                updatedAt = updatedAt
             )
         }
     }
+
+
+    private fun createTenantEvent(event: EventType): TenantEvent {
+        val accountId = this.accountId.value().toString()
+        return TenantEvent.create(
+            this.id(),
+            event,
+            event.description.format(accountId)
+        );
+    }
+
+    fun createTenantEventAccountNotFound(): TenantEvent {
+        return createTenantEvent(EventType.ACCOUNT_NOT_FOUND)
+    }
+
+    fun createTenantEventProcessing(): TenantEvent {
+        return createTenantEvent(EventType.PROCESSING)
+    }
+
 }

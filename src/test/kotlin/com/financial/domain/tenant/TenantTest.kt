@@ -20,6 +20,27 @@ class TenantTest : UnitTest() {
         assertNotNull(tenant.id())
         assertEquals(expectedAccountId, tenant.accountId)
         assertNotNull(tenant.createdAt)
+        assertNotNull(tenant.updatedAt)
+    }
+
+    @Test
+    fun givenValidParams_whenCreateAndEvent_shouldReturnValidIt() {
+        //given
+        val expectedAccountId = AccountID()
+
+        //when
+        val tenant = Tenant.create(expectedAccountId)
+        val event = tenant.createTenantEventProcessing()
+
+        //then
+        assertNotNull(tenant.id())
+        assertEquals(expectedAccountId, tenant.accountId)
+        assertNotNull(tenant.createdAt)
+        assertNotNull(tenant.updatedAt)
+
+        assertEquals(tenant.id(), event.tenantId)
+        assertEquals(EventType.PROCESSING, event.eventType)
+        assertNotNull(event.createdAt)
     }
 
 }

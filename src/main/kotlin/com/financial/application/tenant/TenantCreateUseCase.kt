@@ -1,10 +1,8 @@
-package com.financial.application.tenant.create
+package com.financial.application.tenant
 
 import com.financial.application.UseCase
-import com.financial.domain.account.Account
 import com.financial.domain.account.AccountGateway
 import com.financial.domain.account.AccountID
-import com.financial.domain.expections.NotFoundException
 import com.financial.domain.tenant.Tenant
 import com.financial.domain.tenant.TenantGateway
 
@@ -14,15 +12,20 @@ class TenantCreateUseCase(
 ) : UseCase<TenantCreateUseCase.Input, TenantCreateUseCase.Output> {
 
     override fun execute(input: Input): Output {
-        val accountId = AccountID.with(input.accountId())
+        val accountId = AccountID.Companion.with(input.accountId())
 
         val account = this.accountGateway.getByIdAndDeletedAtIsNull(accountId)
 
-        if (account == null) {
-            println()
+        val tenant = Tenant.create(accountId)
+
+        val event = if (account == null) {
+            tenant.createTenantEventAccountNotFound()
+        } else {
+            tenant.createTenantEventProcessing()
         }
 
-        val tenant = this.tenantGateway.create(Tenant.create(accountId))
+        this.tenantGateway.create(tenant)
+        this.tenantGateway.create(event)
 
         return StdOutput(tenant.id().value().toString())
     }
