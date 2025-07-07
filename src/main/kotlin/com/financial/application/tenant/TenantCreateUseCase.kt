@@ -16,16 +16,15 @@ class TenantCreateUseCase(
 
         val account = this.accountGateway.getByIdAndDeletedAtIsNull(accountId)
 
-        val tenant = Tenant.create(accountId)
-
-        val event = if (account == null) {
-            tenant.createTenantEventAccountNotFound()
+        val tenant = if (account == null) {
+            Tenant.create(accountId)
+                .createTenantEventAccountNotFound()
         } else {
-            tenant.createTenantEventProcessing()
+            Tenant.create(accountId)
+                .createTenantEventProcessing()
         }
 
         this.tenantGateway.create(tenant)
-        this.tenantGateway.create(event)
 
         return StdOutput(tenant.id().value().toString())
     }

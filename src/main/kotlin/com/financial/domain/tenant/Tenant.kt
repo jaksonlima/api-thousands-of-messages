@@ -67,7 +67,6 @@ class Tenant(
         return this;
     }
 
-
     fun createTenantEventCreated(): Tenant {
         return createTenantEvent(EventType.CREATED)
     }
