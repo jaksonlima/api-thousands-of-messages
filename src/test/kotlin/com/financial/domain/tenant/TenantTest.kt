@@ -5,6 +5,7 @@ import com.financial.domain.account.AccountID
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 
 class TenantTest : UnitTest() {
 
@@ -19,28 +20,84 @@ class TenantTest : UnitTest() {
         //then
         assertNotNull(tenant.id())
         assertEquals(expectedAccountId, tenant.accountId)
+        assertTrue(tenant.tenantEvents().isEmpty())
         assertNotNull(tenant.createdAt)
         assertNotNull(tenant.updatedAt)
     }
 
     @Test
-    fun givenValidParams_whenCreateAndEvent_shouldReturnValidIt() {
+    fun givenValidParams_whenCreateAndEventCreated_shouldReturnValidIt() {
         //given
         val expectedAccountId = AccountID()
 
         //when
         val tenant = Tenant.create(expectedAccountId)
-        val event = tenant.createTenantEventProcessing()
+            .createTenantEventCreated()
+
+        val tenantEvent = tenant.tenantEvents().first()
 
         //then
         assertNotNull(tenant.id())
         assertEquals(expectedAccountId, tenant.accountId)
+        assertTrue(tenant.tenantEvents().isNotEmpty())
         assertNotNull(tenant.createdAt)
         assertNotNull(tenant.updatedAt)
 
-        assertEquals(tenant.id(), event.tenantId)
-        assertEquals(EventType.PROCESSING, event.eventType)
-        assertNotNull(event.createdAt)
+
+        assertEquals(tenant.id(), tenantEvent.tenantId)
+        assertEquals(EventType.CREATED, tenantEvent.eventType)
+        assertTrue(tenantEvent.content.isNotEmpty())
+        assertNotNull(tenantEvent.createdAt)
+    }
+
+    @Test
+    fun givenValidParams_whenCreateAndEventProcessing_shouldReturnValidIt() {
+        //given
+        val expectedAccountId = AccountID()
+
+        //when
+        val tenant = Tenant.create(expectedAccountId)
+            .createTenantEventProcessing()
+
+        val tenantEvent = tenant.tenantEvents().first()
+
+        //then
+        assertNotNull(tenant.id())
+        assertEquals(expectedAccountId, tenant.accountId)
+        assertTrue(tenant.tenantEvents().isNotEmpty())
+        assertNotNull(tenant.createdAt)
+        assertNotNull(tenant.updatedAt)
+
+
+        assertEquals(tenant.id(), tenantEvent.tenantId)
+        assertEquals(EventType.PROCESSING, tenantEvent.eventType)
+        assertTrue(tenantEvent.content.isNotEmpty())
+        assertNotNull(tenantEvent.createdAt)
+    }
+
+    @Test
+    fun givenValidParams_whenCreateAndEventAccountNotFound_shouldReturnValidIt() {
+        //given
+        val expectedAccountId = AccountID()
+
+        //when
+        val tenant = Tenant.create(expectedAccountId)
+            .createTenantEventAccountNotFound()
+
+        val tenantEvent = tenant.tenantEvents().first()
+
+        //then
+        assertNotNull(tenant.id())
+        assertEquals(expectedAccountId, tenant.accountId)
+        assertTrue(tenant.tenantEvents().isNotEmpty())
+        assertNotNull(tenant.createdAt)
+        assertNotNull(tenant.updatedAt)
+
+
+        assertEquals(tenant.id(), tenantEvent.tenantId)
+        assertEquals(EventType.ACCOUNT_NOT_FOUND, tenantEvent.eventType)
+        assertTrue(tenantEvent.content.isNotEmpty())
+        assertNotNull(tenantEvent.createdAt)
     }
 
 }
