@@ -18,6 +18,15 @@ class NotFoundException(
 
             return NotFoundException(message, arrayListOf())
         }
+
+        fun withDeleted(
+            aClass: KClass<out Aggregate<*>>,
+            aId: Identifier<*>
+        ): NotFoundException {
+            val message = "${aClass.simpleName} with ID ${aId.value().toString()} deleted"
+
+            return NotFoundException(message, arrayListOf())
+        }
     }
 }
 

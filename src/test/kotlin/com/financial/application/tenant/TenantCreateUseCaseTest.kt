@@ -1,0 +1,69 @@
+package com.financial.application.tenant
+
+import com.financial.application.UseCaseTest
+import com.financial.domain.account.Account
+import com.financial.domain.account.AccountGateway
+import com.financial.domain.tenant.EventType
+import com.financial.domain.tenant.Tenant
+import com.financial.domain.tenant.TenantGateway
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertNotNull
+import org.mockito.InjectMocks
+import org.mockito.Mock
+import org.mockito.Mockito.`when`
+import org.mockito.kotlin.any
+import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
+
+class TenantCreateUseCaseTest : UseCaseTest() {
+
+    @InjectMocks
+    private lateinit var useCase: TenantCreateUseCase
+
+    @Mock
+    private lateinit var accountGateway: AccountGateway
+
+    @Mock
+    private lateinit var tenantGateway: TenantGateway
+
+    @Test
+    fun givenValidParam_whenCallsCreateTenantEventProcessing_shouldReturnNewTenant() {
+        //
+        val expectedEventType = EventType.PROCESSING
+        val expectedAccount = Account.create("jack")
+        val expectedAccountId = expectedAccount.id().value().toString()
+        val expectedContent = "processing [account-id: ${expectedAccountId}]"
+
+        //when
+        `when`(this.accountGateway.getByIdAndDeletedAtIsNull(any()))
+            .thenReturn(expectedAccount)
+
+        `when`(this.tenantGateway.create(any()))
+            .thenAnswer { it.arguments[0] }
+
+        val result = this.useCase.execute(Input(expectedAccountId))
+
+        //then
+        val captor = argumentCaptor<Tenant>()
+
+        verify(this.tenantGateway, times(1)).create(captor.capture());
+
+        val tenant = captor.firstValue
+        val tenantEvent = tenant.tenantEvents().first()
+
+        assertNotNull(result.id())
+        assertEquals(expectedAccountId, tenant.accountId.value().toString())
+        assertEquals(tenant.id(), tenantEvent.tenantId)
+        assertEquals(expectedEventType, tenantEvent.eventType)
+        assertEquals(expectedContent, tenantEvent.content)
+        assertNotNull(tenant.createdAt)
+        assertNotNull(tenant.updatedAt)
+        assertNotNull(tenantEvent.createdAt)
+    }
+
+    data class Input(val id: String) : TenantCreateUseCase.Input {
+        override fun accountId(): String = this.id
+    }
+}

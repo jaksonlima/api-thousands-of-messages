@@ -44,7 +44,6 @@ class CreateAccountUseCaseTest : UseCaseTest() {
         assertNotNull(result.id())
         assertTrue(captor.firstValue.domainEvents().isNotEmpty())
         assertEquals(expectedName, captor.firstValue.name)
-
     }
 
 

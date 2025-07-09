@@ -75,9 +75,4 @@ class Tenant(
         return createTenantEvent(EventType.PROCESSING)
     }
 
-
-    fun createTenantEventAccountNotFound(): Tenant {
-        return createTenantEvent(EventType.ACCOUNT_NOT_FOUND)
-    }
-
 }

@@ -75,29 +75,4 @@ class TenantTest : UnitTest() {
         assertNotNull(tenantEvent.createdAt)
     }
 
-    @Test
-    fun givenValidParams_whenCreateAndEventAccountNotFound_shouldReturnValidIt() {
-        //given
-        val expectedAccountId = AccountID()
-
-        //when
-        val tenant = Tenant.create(expectedAccountId)
-            .createTenantEventAccountNotFound()
-
-        val tenantEvent = tenant.tenantEvents().first()
-
-        //then
-        assertNotNull(tenant.id())
-        assertEquals(expectedAccountId, tenant.accountId)
-        assertTrue(tenant.tenantEvents().isNotEmpty())
-        assertNotNull(tenant.createdAt)
-        assertNotNull(tenant.updatedAt)
-
-
-        assertEquals(tenant.id(), tenantEvent.tenantId)
-        assertEquals(EventType.ACCOUNT_NOT_FOUND, tenantEvent.eventType)
-        assertTrue(tenantEvent.content.isNotEmpty())
-        assertNotNull(tenantEvent.createdAt)
-    }
-
 }
