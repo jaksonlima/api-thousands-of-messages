@@ -1,27 +1,14 @@
 package com.financial.infrastructure.tenant
 
-import com.financial.domain.tenant.Tenant
-import com.financial.domain.tenant.TenantGateway
 import com.financial.domain.tenant.TenantID
 import java.nio.file.Files
 import java.nio.file.Path
 import java.sql.SQLException
-import java.util.concurrent.ConcurrentHashMap
 import javax.sql.DataSource
 
-
-class InMemoryTenantGateway(
+class TenantPostgresGateway(
     private val dataSource: DataSource
-) : TenantGateway {
-
-    companion object {
-        private val db: MutableMap<TenantID, Tenant> = ConcurrentHashMap()
-    }
-
-    override fun create(tenant: Tenant): Tenant {
-        db.putIfAbsent(tenant.id(), tenant)
-        return tenant
-    }
+) {
 
     fun setSearchPath(tenantId: TenantID) {
         try {
@@ -45,9 +32,11 @@ class InMemoryTenantGateway(
             dataSource.connection.use { connection ->
                 connection.createStatement().use { statement ->
                     val result =
-                        statement.executeQuery("""
+                        statement.executeQuery(
+                            """
                             SELECT schema_name FROM information_schema.schemata WHERE schema_name = $tenantId
-                        """.trimIndent())
+                        """.trimIndent()
+                        )
 
                     if (!result.next()) {
                         statement.execute("CREATE SCHEMA $tenantId");
