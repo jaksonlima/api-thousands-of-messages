@@ -1,4 +1,31 @@
 package com.financial.application.account
 
-class AccountGetUseCase {
+import com.financial.application.UseCase
+import com.financial.domain.account.AccountGateway
+import com.financial.domain.account.AccountID
+import java.util.*
+
+class AccountGetUseCase(
+    private val accountGateway: AccountGateway
+) : UseCase<String, Optional<AccountGetUseCase.Output>> {
+
+    override fun execute(input: String): Optional<Output> {
+        val accountId = AccountID.with(input)
+
+        val result = this.accountGateway.getByIdAndDeletedAtIsNull(accountId)
+
+        if (result == null) {
+            return Optional.empty()
+        }
+
+        return Optional.of(StdOutput(result.id().value().toString()))
+    }
+
+    interface Output {
+        fun id(): String
+    }
+
+    data class StdOutput(val id: String) : Output {
+        override fun id(): String = this.id
+    }
 }

@@ -5,6 +5,14 @@ kafka:
   producers:
     account:
       topic: account.created
+  consumers:
+    tenant:
+      auto-offset-reset: earliest
+      concurrency: 1
+      id: kafka-listener-tenant
+      topics: ${kafka.producers.account.topic}
+      group-id: tenant-service
+      max-attempts: 4
 
 spring:
   application.name: Financial
