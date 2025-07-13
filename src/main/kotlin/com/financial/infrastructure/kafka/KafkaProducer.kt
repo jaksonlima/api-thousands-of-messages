@@ -8,7 +8,7 @@ class KafkaProducer(
     private val kafkaTemplate: KafkaTemplate<String, Any>
 ) : Producer {
 
-    override fun send(topic: String, message: String) {
+    override fun <T> send(topic: String, message: T) {
         this.kafkaTemplate.send(topic, message)
     }
 

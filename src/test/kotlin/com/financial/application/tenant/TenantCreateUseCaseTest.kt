@@ -43,7 +43,7 @@ class TenantCreateUseCaseTest : UseCaseTest() {
         `when`(this.tenantGateway.create(any()))
             .thenAnswer { it.arguments[0] }
 
-        val result = this.useCase.execute(Input(expectedAccountId))
+        val result = this.useCase.execute(expectedAccountId)
 
         //then
         val captor = argumentCaptor<Tenant>()
@@ -63,7 +63,4 @@ class TenantCreateUseCaseTest : UseCaseTest() {
         assertNotNull(tenantEvent.createdAt)
     }
 
-    data class Input(val id: String) : TenantCreateUseCase.Input {
-        override fun accountId(): String = this.id
-    }
 }

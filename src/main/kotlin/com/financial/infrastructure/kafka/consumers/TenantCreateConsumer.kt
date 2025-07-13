@@ -39,7 +39,7 @@ class TenantCreateConsumer(
     )
     @RetryableTopic(
         backoff = Backoff(delay = 1000, multiplier = 2.0),
-        attempts = "\${kafka.consumers.videos.max-attempts}",
+        attempts = "\${kafka.consumers.tenant.max-attempts}",
         topicSuffixingStrategy = TopicSuffixingStrategy.SUFFIX_WITH_INDEX_VALUE
     )
     fun onMessage(@Payload(required = false) payload: String?, metadata: ConsumerRecordMetadata) {

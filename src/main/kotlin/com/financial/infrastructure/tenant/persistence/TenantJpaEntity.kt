@@ -8,8 +8,8 @@ import jakarta.persistence.Id
 import jakarta.persistence.Table
 import java.time.OffsetDateTime
 
-@Entity(name = "Tenant")
-@Table(name = "tenant")
+//@Entity(name = "Tenant")
+//@Table(name = "tenant")
 class TenantJpaEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
