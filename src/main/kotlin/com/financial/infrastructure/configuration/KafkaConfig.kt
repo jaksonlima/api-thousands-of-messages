@@ -41,7 +41,7 @@ class KafkaConfig(
     }
 
     @Bean
-    fun producerFactory(): ProducerFactory<String, Any> {
+    fun producerFactory(): ProducerFactory<String, String> {
         val config = mapOf(
             ProducerConfig.BOOTSTRAP_SERVERS_CONFIG to properties.bootstrapServers,
             ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG to StringSerializer::class.java,
@@ -51,14 +51,14 @@ class KafkaConfig(
     }
 
     @Bean
-    fun kafkaTemplate(): KafkaTemplate<String, Any> =
+    fun kafkaTemplate(): KafkaTemplate<String, String> =
         KafkaTemplate(producerFactory())
 
     @Bean
     fun kafkaListenerFactory(): KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, String>> {
         val factory = ConcurrentKafkaListenerContainerFactory<String, String>()
-        factory.consumerFactory = consumerFactory()
         factory.containerProperties.pollTimeout = properties.poolTimeout
+        factory.consumerFactory = consumerFactory()
         return factory
     }
 

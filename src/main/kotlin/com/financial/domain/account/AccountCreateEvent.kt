@@ -8,7 +8,5 @@ data class AccountCreateEvent(
     val createdAt: Instant,
     val occurredOn: Instant
 ) : DomainEvent {
-
     override fun occurredOn(): Instant = this.occurredOn
-
 }

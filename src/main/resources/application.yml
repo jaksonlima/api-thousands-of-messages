@@ -12,7 +12,7 @@ kafka:
       id: kafka-listener-tenant
       topics: ${kafka.producers.account.topic}
       group-id: tenant-service
-      max-attempts: 4
+      max-attempts: 3
 
 spring:
   application.name: Financial

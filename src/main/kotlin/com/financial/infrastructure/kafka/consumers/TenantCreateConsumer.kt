@@ -1,11 +1,11 @@
 package com.financial.infrastructure.kafka.consumers
 
-import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.financial.application.account.AccountGetUseCase
 import com.financial.application.tenant.TenantCreateUseCase
+import com.financial.domain.DomainEvent
 import com.financial.domain.account.AccountCreateEvent
-import com.financial.infrastructure.kafka.models.MessageValue
+import com.financial.infrastructure.json.Json
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.kafka.annotation.DltHandler
@@ -16,6 +16,7 @@ import org.springframework.kafka.retrytopic.TopicSuffixingStrategy
 import org.springframework.messaging.handler.annotation.Payload
 import org.springframework.retry.annotation.Backoff
 import org.springframework.stereotype.Component
+import java.time.Instant
 
 @Component
 class TenantCreateConsumer(
@@ -26,7 +27,7 @@ class TenantCreateConsumer(
 
     companion object {
         private val log: Logger = LoggerFactory.getLogger(TenantCreateConsumer::class.java)
-        private val ACCOUNT_MESSAGE_TYPE = object : TypeReference<MessageValue<AccountCreateEvent>>() {}
+        private val ACCOUNT_MESSAGE_TYPE = AccountCreateEvent::class.java
     }
 
     @KafkaListener(
@@ -61,7 +62,7 @@ class TenantCreateConsumer(
             payload
         )
 
-        val messagePayload = this.objectMapper.readValue(payload, ACCOUNT_MESSAGE_TYPE).payload
+        val messagePayload = Json.readTree(payload, ACCOUNT_MESSAGE_TYPE)
 
         this.accountGetUseCase.execute(messagePayload.accountId)
             .map { it.id() }

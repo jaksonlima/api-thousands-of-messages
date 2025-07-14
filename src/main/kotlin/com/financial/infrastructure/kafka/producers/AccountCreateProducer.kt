@@ -16,7 +16,7 @@ class AccountCreateProducer(
 ) {
 
     fun createAccount(account: AccountCreateEvent) {
-//        val result = objectMapper.writeValueAsString(account)
-        this.producer.send(topic.name, account)
+        val result = this.objectMapper.writeValueAsString(account)
+        this.producer.send(topic.name, result)
     }
 }
