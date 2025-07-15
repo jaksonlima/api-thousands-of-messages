@@ -11,7 +11,7 @@ import java.net.URI
 
 @RestController
 class AccountController(
-    val accountCreateUseCase: AccountCreateUseCase,
+    private val accountCreateUseCase: AccountCreateUseCase,
 ) : AccountAPI {
 
     override fun create(account: CreateRequest): ResponseEntity<CreateResponse> {

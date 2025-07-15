@@ -14,11 +14,9 @@ class AccountGetUseCase(
 
         val result = this.accountGateway.getByIdAndDeletedAtIsNull(accountId)
 
-        if (result == null) {
-            return Optional.empty()
-        }
-
-        return Optional.of(StdOutput(result.id().value().toString()))
+        return result
+            .map { it.id().value().toString() }
+            .map(::StdOutput)
     }
 
     interface Output {

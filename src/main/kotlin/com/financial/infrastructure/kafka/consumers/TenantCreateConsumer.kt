@@ -1,9 +1,7 @@
 package com.financial.infrastructure.kafka.consumers
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.financial.application.account.AccountGetUseCase
 import com.financial.application.tenant.TenantCreateUseCase
-import com.financial.domain.DomainEvent
 import com.financial.domain.account.AccountCreateEvent
 import com.financial.infrastructure.json.Json
 import org.slf4j.Logger
@@ -16,13 +14,11 @@ import org.springframework.kafka.retrytopic.TopicSuffixingStrategy
 import org.springframework.messaging.handler.annotation.Payload
 import org.springframework.retry.annotation.Backoff
 import org.springframework.stereotype.Component
-import java.time.Instant
 
 @Component
 class TenantCreateConsumer(
     private val tenantCreateUseCase: TenantCreateUseCase,
     private val accountGetUseCase: AccountGetUseCase,
-    private val objectMapper: ObjectMapper
 ) {
 
     companion object {

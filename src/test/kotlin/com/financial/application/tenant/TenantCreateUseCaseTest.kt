@@ -3,7 +3,6 @@ package com.financial.application.tenant
 import com.financial.application.UseCaseTest
 import com.financial.domain.account.Account
 import com.financial.domain.account.AccountGateway
-import com.financial.domain.tenant.EventType
 import com.financial.domain.tenant.Tenant
 import com.financial.domain.tenant.TenantGateway
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -31,10 +30,8 @@ class TenantCreateUseCaseTest : UseCaseTest() {
     @Test
     fun givenValidParam_whenCallsCreateTenantEventProcessing_shouldReturnNewTenant() {
         //
-        val expectedEventType = EventType.PROCESSING
         val expectedAccount = Account.create("jack")
         val expectedAccountId = expectedAccount.id().value().toString()
-        val expectedContent = "processing [account-id: ${expectedAccountId}]"
 
         //when
         `when`(this.accountGateway.getByIdAndDeletedAtIsNull(any()))
@@ -51,16 +48,11 @@ class TenantCreateUseCaseTest : UseCaseTest() {
         verify(this.tenantGateway, times(1)).create(captor.capture());
 
         val tenant = captor.firstValue
-        val tenantEvent = tenant.tenantEvents().first()
 
         assertNotNull(result.id())
         assertEquals(expectedAccountId, tenant.accountId.value().toString())
-        assertEquals(tenant.id(), tenantEvent.tenantId)
-        assertEquals(expectedEventType, tenantEvent.eventType)
-        assertEquals(expectedContent, tenantEvent.content)
         assertNotNull(tenant.createdAt)
         assertNotNull(tenant.updatedAt)
-        assertNotNull(tenantEvent.createdAt)
     }
 
 }

@@ -11,16 +11,16 @@ import java.time.OffsetDateTime
 //@Entity(name = "Tenant")
 //@Table(name = "tenant")
 class TenantJpaEntity(
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: String? = null,
-
-    @Column(name = "ACCOUNT_ID", nullable = false)
-    val accountId: String,
-
-    @Column(name = "CREATED_AT", nullable = false, updatable = false)
-    val createdAt: OffsetDateTime = OffsetDateTime.now(),
-
-    @Column(name = "UPDATED_AT", nullable = false)
-    var updatedAt: OffsetDateTime = OffsetDateTime.now()
+//    @Id
+//    @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    val id: String? = null,
+//
+//    @Column(name = "ACCOUNT_ID", nullable = false)
+//    val accountId: String,
+//
+//    @Column(name = "CREATED_AT", nullable = false, updatable = false)
+//    val createdAt: OffsetDateTime = OffsetDateTime.now(),
+//
+//    @Column(name = "UPDATED_AT", nullable = false)
+//    var updatedAt: OffsetDateTime = OffsetDateTime.now()
 )

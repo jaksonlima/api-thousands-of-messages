@@ -3,10 +3,9 @@ package com.financial.infrastructure.tenant
 import com.financial.domain.tenant.Tenant
 import com.financial.domain.tenant.TenantGateway
 import com.financial.domain.tenant.TenantID
-import org.springframework.stereotype.Component
 import java.util.concurrent.ConcurrentHashMap
 
-@Component
+//@Component
 class TenantInMemoryGateway() : TenantGateway {
 
     companion object {

@@ -1,6 +1,0 @@
---CREATE TABLE tenant (
---    id VARCHAR(36) PRIMARY KEY,
---    account_id VARCHAR(36) NOT NULL,
---    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
---    updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
---);

@@ -5,7 +5,6 @@ import com.financial.domain.account.AccountID
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
-import kotlin.test.assertTrue
 
 class TenantTest : UnitTest() {
 
@@ -20,7 +19,6 @@ class TenantTest : UnitTest() {
         //then
         assertNotNull(tenant.id())
         assertEquals(expectedAccountId, tenant.accountId)
-        assertTrue(tenant.tenantEvents().isEmpty())
         assertNotNull(tenant.createdAt)
         assertNotNull(tenant.updatedAt)
     }
@@ -32,22 +30,12 @@ class TenantTest : UnitTest() {
 
         //when
         val tenant = Tenant.create(expectedAccountId)
-            .createTenantEventCreated()
-
-        val tenantEvent = tenant.tenantEvents().first()
 
         //then
         assertNotNull(tenant.id())
         assertEquals(expectedAccountId, tenant.accountId)
-        assertTrue(tenant.tenantEvents().isNotEmpty())
         assertNotNull(tenant.createdAt)
         assertNotNull(tenant.updatedAt)
-
-
-        assertEquals(tenant.id(), tenantEvent.tenantId)
-        assertEquals(EventType.CREATED, tenantEvent.eventType)
-        assertTrue(tenantEvent.content.isNotEmpty())
-        assertNotNull(tenantEvent.createdAt)
     }
 
     @Test
@@ -57,22 +45,12 @@ class TenantTest : UnitTest() {
 
         //when
         val tenant = Tenant.create(expectedAccountId)
-            .createTenantEventProcessing()
-
-        val tenantEvent = tenant.tenantEvents().first()
 
         //then
         assertNotNull(tenant.id())
         assertEquals(expectedAccountId, tenant.accountId)
-        assertTrue(tenant.tenantEvents().isNotEmpty())
         assertNotNull(tenant.createdAt)
         assertNotNull(tenant.updatedAt)
-
-
-        assertEquals(tenant.id(), tenantEvent.tenantId)
-        assertEquals(EventType.PROCESSING, tenantEvent.eventType)
-        assertTrue(tenantEvent.content.isNotEmpty())
-        assertNotNull(tenantEvent.createdAt)
     }
 
 }
