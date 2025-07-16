@@ -8,6 +8,7 @@ import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.Mockito.`when`
 import org.mockito.kotlin.any
+import java.util.*
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
@@ -26,7 +27,7 @@ class AccountGetUseCaseTest : UseCaseTest() {
         val expectedAccount = Account.create("jack")
 
         `when`(this.gateway.getByIdAndDeletedAtIsNull(any()))
-            .thenReturn(expectedAccount)
+            .thenReturn(Optional.of(expectedAccount))
 
         //when
         val result = this.useCase.execute(expectedAccount.id().value().toString())

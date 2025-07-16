@@ -15,6 +15,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
+import java.util.*
 
 class TenantCreateUseCaseTest : UseCaseTest() {
 
@@ -35,7 +36,7 @@ class TenantCreateUseCaseTest : UseCaseTest() {
 
         //when
         `when`(this.accountGateway.getByIdAndDeletedAtIsNull(any()))
-            .thenReturn(expectedAccount)
+            .thenReturn(Optional.of(expectedAccount))
 
         `when`(this.tenantGateway.create(any()))
             .thenAnswer { it.arguments[0] }

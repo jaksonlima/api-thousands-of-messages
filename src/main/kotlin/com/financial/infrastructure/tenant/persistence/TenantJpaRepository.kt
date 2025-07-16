@@ -1,4 +1,8 @@
 package com.financial.infrastructure.tenant.persistence
 
-interface TenantJpaRepository {
+import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.stereotype.Repository
+
+@Repository
+interface TenantJpaRepository : JpaRepository<TenantJpaEntity, String> {
 }
