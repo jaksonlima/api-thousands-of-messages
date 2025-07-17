@@ -24,9 +24,6 @@ class TenantPostgresGateway(
 
     override fun create(tenant: Tenant): Tenant {
         this.tenantJpaRepository.save(TenantJpaEntity.from(tenant))
-        if (true ) {
-            throw Exception("error")
-        }
         createSchema(tenant)
         return tenant
     }
