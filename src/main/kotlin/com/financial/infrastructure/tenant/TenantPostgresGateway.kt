@@ -1,16 +1,15 @@
 package com.financial.infrastructure.tenant
 
+import com.financial.domain.account.AccountID
 import com.financial.domain.tenant.Tenant
 import com.financial.domain.tenant.TenantGateway
-import com.financial.domain.tenant.TenantID
 import com.financial.infrastructure.tenant.persistence.TenantJpaEntity
 import com.financial.infrastructure.tenant.persistence.TenantJpaRepository
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
-import java.nio.file.Files
-import java.nio.file.Path
 import java.sql.SQLException
+import java.util.*
 import javax.sql.DataSource
 
 @Component
@@ -25,65 +24,65 @@ class TenantPostgresGateway(
 
     override fun create(tenant: Tenant): Tenant {
         this.tenantJpaRepository.save(TenantJpaEntity.from(tenant))
-
+        if (true ) {
+            throw Exception("error")
+        }
         createSchema(tenant)
-
         return tenant
     }
 
-    fun setSearchPath(tenantId: TenantID) {
-        try {
-            val tenantId = tenantId.value().toString()
-
-            dataSource.connection.use { connection ->
-                connection.createStatement().use { statement ->
-                    statement.execute("SET search_path TO $tenantId");
-                }
-            }
-        } catch (e: SQLException) {
-            log.error("Set schema error [message:  ${e.message}]")
-            throw e
-        }
+    override fun findByAccountId(accountId: AccountID): Optional<Tenant> {
+        return this.tenantJpaRepository.findByAccountId(accountId.toString())
+            .map { it.toDomain() }
     }
 
-    fun createSchema(tenant: Tenant) {
+    override fun createSchema(tenant: Tenant): Boolean {
         try {
             val tenantName = tenant.name
+            val tenantId = tenant.id().toString()
 
             dataSource.connection.use { connection ->
                 connection.autoCommit = true
 
                 connection.createStatement().use { statement ->
-                    val result =
-                        statement.executeQuery(
+                    val ps =
+                        connection.prepareStatement(
                             """
-                            SELECT schema_name FROM information_schema.schemata WHERE schema_name = '$tenantName'
-                        """.trimIndent()
+                            SELECT schema_name FROM information_schema.schemata WHERE schema_name = ?""".trimIndent()
                         )
+
+                    ps.setString(1, tenantName)
+
+                    val result = ps.executeQuery()
 
                     if (!result.next()) {
                         statement.execute("""CREATE SCHEMA "$tenantName"""")
                         statement.execute("""SET search_path TO "$tenantName"""")
 
-                        val sql = Files.readString(Path.of("src/main/resources/schema-template.sql"))
+                        val sql = this::class.java.getResource("/db/schema-template.sql")?.readText()
+                            ?: throw IllegalStateException("schema-template.sql not found")
 
                         for (stmt in sql.split(";")) {
 
-                            if (stmt.trim().isNotEmpty()) {
+                            if (stmt.trim().isNotBlank()) {
                                 statement.execute(stmt)
                             }
                         }
+                        log.info("Schema created [tenant-id: $tenantId]")
 
-                        log.info("Schema created [tenant-id: $tenantName]")
+                        return true;
                     } else {
-                        log.warn("Exists schema [tenant-id: $tenantName]")
+                        log.warn("Schema exists [tenant-id: $tenantId]")
                     }
                 }
             }
+
+            return false
         } catch (e: SQLException) {
             log.error("Schema error [message:  ${e.message}]")
             throw e
         }
     }
+
 
 }

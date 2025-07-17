@@ -3,6 +3,8 @@ package com.financial.infrastructure.kafka.consumers
 import com.financial.application.account.AccountGetUseCase
 import com.financial.application.tenant.TenantCreateUseCase
 import com.financial.domain.account.AccountCreateEvent
+import com.financial.domain.account.AccountID
+import com.financial.domain.tenant.TenantGateway
 import com.financial.infrastructure.json.Json
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -18,6 +20,7 @@ import org.springframework.stereotype.Component
 @Component
 class TenantCreateConsumer(
     private val tenantCreateUseCase: TenantCreateUseCase,
+    private val tenantGateway: TenantGateway,
     private val accountGetUseCase: AccountGetUseCase,
 ) {
 
@@ -61,10 +64,15 @@ class TenantCreateConsumer(
         val messagePayload = Json.readTree(payload, ACCOUNT_MESSAGE_TYPE)
 
         this.accountGetUseCase.execute(messagePayload.accountId)
-            .map { it.id() }
-            .ifPresentOrElse(this.tenantCreateUseCase::execute) {
-                log.warn("Account was not found ${messagePayload.accountId}")
-            }
+            .ifPresentOrElse({ acc ->
+                this.tenantGateway.findByAccountId(AccountID.with(acc.id()))
+                    .ifPresentOrElse(
+                        { this.tenantGateway.createSchema(it) },
+                        { this.tenantCreateUseCase.execute(acc.id()) }
+                    )
+            }, {
+                log.warn("Message received from Kafka, account was not found [account-id: ${messagePayload.accountId}]")
+            })
     }
 
     @DltHandler

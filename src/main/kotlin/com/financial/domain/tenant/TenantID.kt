@@ -10,4 +10,8 @@ data class TenantID(private val id: UUID = UUID.randomUUID()) : Identifier<UUID>
     companion object {
         fun with(aId: String): TenantID = TenantID(UUID.fromString(aId))
     }
+
+    override fun toString(): String {
+        return value().toString()
+    }
 }

@@ -10,4 +10,8 @@ data class AccountID(private val id: UUID = UUID.randomUUID()) : Identifier<UUID
     companion object {
         fun with(aId: String): AccountID = AccountID(UUID.fromString(aId))
     }
+
+    override fun toString(): String {
+        return this.value().toString()
+    }
 }
