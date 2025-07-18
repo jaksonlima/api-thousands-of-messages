@@ -3,7 +3,6 @@ package com.financial.infrastructure.kafka.consumers
 import com.financial.application.account.AccountGetUseCase
 import com.financial.application.tenant.TenantCreateUseCase
 import com.financial.domain.account.AccountCreateEvent
-import com.financial.domain.account.AccountID
 import com.financial.domain.tenant.TenantGateway
 import com.financial.infrastructure.json.Json
 import org.slf4j.Logger
@@ -65,11 +64,7 @@ class TenantCreateConsumer(
 
         this.accountGetUseCase.execute(messagePayload.accountId)
             .ifPresentOrElse({ acc ->
-                this.tenantGateway.findByAccountId(AccountID.with(acc.id()))
-                    .ifPresentOrElse(
-                        { this.tenantGateway.createSchema(it) },
-                        { this.tenantCreateUseCase.execute(acc.id()) }
-                    )
+                this.tenantCreateUseCase.execute(acc.id())
             }, {
                 log.warn("Message received from Kafka, account was not found [account-id: ${messagePayload.accountId}]")
             })

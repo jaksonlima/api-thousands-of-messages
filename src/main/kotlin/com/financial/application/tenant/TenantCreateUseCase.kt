@@ -11,10 +11,15 @@ class TenantCreateUseCase(
 
     override fun execute(input: String): Output {
         val accountId = AccountID.with(input)
+        val tenant = Tenant.create(accountId)
 
-        val created = this.tenantGateway.create(Tenant.create(accountId))
+        this.tenantGateway.findByAccountId(accountId)
+            .ifPresentOrElse(
+                { this.tenantGateway.createSchema(it) },
+                { this.tenantGateway.create(tenant) }
+            )
 
-        return StdOutput(created.id().value().toString())
+        return StdOutput(tenant.id().toString())
     }
 
     interface Output {

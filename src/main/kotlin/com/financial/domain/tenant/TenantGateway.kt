@@ -1,7 +1,7 @@
 package com.financial.domain.tenant
 
 import com.financial.domain.account.AccountID
-import java.util.Optional
+import java.util.*
 
 interface TenantGateway {
     fun create(tenant: Tenant): Tenant
