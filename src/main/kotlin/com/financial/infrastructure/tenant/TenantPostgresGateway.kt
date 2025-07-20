@@ -33,7 +33,7 @@ class TenantPostgresGateway(
             .map { it.toDomain() }
     }
 
-    override fun createSchema(tenant: Tenant): Boolean {
+    override fun createSchema(tenant: Tenant): Tenant {
         try {
             val tenantName = tenant.name
             val tenantId = tenant.id().toString()
@@ -66,15 +66,13 @@ class TenantPostgresGateway(
                             }
                         }
                         log.info("Schema created [tenant-id: $tenantId]")
-
-                        return true;
                     } else {
                         log.warn("Schema exists [tenant-id: $tenantId]")
                     }
                 }
             }
 
-            return false
+            return tenant;
         } catch (e: SQLException) {
             log.error("Schema error [message:  ${e.message}]")
             throw e

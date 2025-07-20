@@ -33,7 +33,7 @@ interface AccountAPI {
     @GetMapping(
         value = ["/{id}"], produces = [MediaType.APPLICATION_JSON_VALUE]
     )
-    @Operation(summary = "Find Account by id")
+    @Operation(summary = "Find Account by id and deletedAt is null")
     @ApiResponses(
         value = [
             ApiResponse(responseCode = "200", description = "Retrieved Account"),

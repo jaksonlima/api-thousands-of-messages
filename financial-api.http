@@ -1,4 +1,4 @@
-PUT http://localhost:8080/wallet/ HTTP/1.1
+PUT http://localhost:8080/wallet/
 content-type: application/json
 
 {
@@ -6,13 +6,17 @@ content-type: application/json
 }
 
 ###
-GET http://localhost:8081/wallet/36289c8a-0d57-4cd0-ab3c-9005b82cc2d1 HTTP/1.1
+GET http://localhost:8081/wallet/36289c8a-0d57-4cd0-ab3c-9005b82cc2d1 
 content-type: application/json
 
 ###
-PUT http://localhost:8081/account/ HTTP/1.1
+PUT http://localhost:8081/account/ 
 content-type: application/json
 
 {
-  "name": "john"
+  "name": "lima"
 }
+
+###
+GET http://localhost:8081/account/402539d4-6646-440a-a43d-981c9effa1fa
+content-type: application/json
