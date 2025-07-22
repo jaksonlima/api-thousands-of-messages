@@ -1,5 +1,6 @@
-PUT http://localhost:8080/wallet/
+PUT http://localhost:8081/wallet/
 content-type: application/json
+x-tenant: test
 
 {
   "name": "john"

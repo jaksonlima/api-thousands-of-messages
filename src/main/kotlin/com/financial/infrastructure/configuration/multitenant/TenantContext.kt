@@ -1,7 +1,7 @@
 package com.financial.infrastructure.configuration.multitenant
 
 object TenantContext {
-    private val currentTenant: ThreadLocal<String> = ThreadLocal()
+    private val currentTenant: ThreadLocal<String> = ThreadLocal.withInitial { "public" }
 
     fun setCurrentTenant(tenant: String) {
         currentTenant.set(tenant)

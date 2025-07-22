@@ -15,7 +15,9 @@ import javax.sql.DataSource
 class HibernateConfig(
     private val jpaProperties: JpaProperties
 ) {
-    private val jpaPathPackagesToScan = "com.financial.infrastructure.*"
+    companion object {
+        private const val PATH_SCAN = "com.financial.infrastructure.*"
+    }
 
     @Bean
     fun jpaVendorAdapter(): JpaVendorAdapter {
@@ -25,16 +27,17 @@ class HibernateConfig(
     @Bean
     fun entityManagerFactory(
         dataSource: DataSource,
-        multiTenantConnectionProviderImpl: MultiTenantConnectionProvider,
-        currentTenantIdentifierResolverImpl: CurrentTenantIdentifierResolver
+        tenantConnectionProvider: MultiTenantConnectionProvider<String>,
+        tenantIdentifierResolver: CurrentTenantIdentifierResolver<String>
     ): LocalContainerEntityManagerFactoryBean {
-        val properties = HashMap(jpaProperties.properties)
-        properties[Environment.MULTI_TENANT_CONNECTION_PROVIDER] = multiTenantConnectionProviderImpl
-        properties[Environment.MULTI_TENANT_IDENTIFIER_RESOLVER] = currentTenantIdentifierResolverImpl
+        val properties = HashMap<String, Any>(jpaProperties.properties)
+        properties[Environment.MULTI_TENANT_CONNECTION_PROVIDER] = tenantConnectionProvider
+        properties[Environment.MULTI_TENANT_IDENTIFIER_RESOLVER] = tenantIdentifierResolver
+
 
         return LocalContainerEntityManagerFactoryBean().apply {
             setDataSource(dataSource)
-            setPackagesToScan(jpaPathPackagesToScan)
+            setPackagesToScan(PATH_SCAN)
             jpaVendorAdapter = jpaVendorAdapter()
             setJpaPropertyMap(properties)
         }
