@@ -10,7 +10,7 @@ import jakarta.persistence.Table
 import java.time.Instant
 
 @Entity(name = "Tenant")
-@Table(name = "tenant")
+@Table(name = "tenant", schema = "public")
 data class TenantJpaEntity(
     @Id
     val id: String = "",

@@ -25,8 +25,8 @@ class TenantConnectionProvider(
     override fun getConnection(tenantIdentifier: String): Connection {
         val connection = anyConnection
         try {
-            connection.createStatement().execute("set search_path to $tenantIdentifier")
-        } catch (_: SQLException) {
+            connection.createStatement().execute("""set search_path to "$tenantIdentifier"""")
+        } catch (e: SQLException) {
             throw HibernateException("Unable to change to schema $tenantIdentifier")
         }
         return connection
@@ -35,7 +35,7 @@ class TenantConnectionProvider(
     override fun releaseConnection(tenantIdentifier: String, connection: Connection) {
         try {
             connection.use {
-                connection.createStatement().execute("set search_path to $tenantIdentifier")
+                connection.createStatement().execute("""set search_path to "$tenantIdentifier"""")
             }
         } catch (_: SQLException) {
             throw HibernateException("Unable to connect to schema $tenantIdentifier")

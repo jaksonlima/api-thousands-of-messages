@@ -1,16 +1,3 @@
-PUT http://localhost:8081/wallet/
-content-type: application/json
-x-tenant: test
-
-{
-  "name": "john"
-}
-
-###
-GET http://localhost:8081/wallet/36289c8a-0d57-4cd0-ab3c-9005b82cc2d1 
-content-type: application/json
-
-###
 PUT http://localhost:8081/account/ 
 content-type: application/json
 
@@ -19,5 +6,23 @@ content-type: application/json
 }
 
 ###
-GET http://localhost:8081/account/402539d4-6646-440a-a43d-981c9effa1fa
+GET http://localhost:8081/account/29d33a3b-0a5e-4a3a-b0b4-a80ede5afa30
 content-type: application/json
+
+###
+PUT http://localhost:8081/wallet/
+content-type: application/json
+x-tenant: 2427855323f744bda5e33702c2d05ac2
+
+{
+  "name": "john",
+  "accountId": "21fce483-6dd6-429b-86d6-8addfe85cfac"
+}
+
+###
+GET http://localhost:8081/wallet/36289c8a-0d57-4cd0-ab3c-9005b82cc2d1 
+content-type: application/json
+
+
+
+

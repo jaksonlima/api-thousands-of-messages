@@ -1,6 +1,7 @@
 package com.financial.application.wallet
 
 import com.financial.application.UseCaseTest
+import com.financial.domain.account.AccountID
 import com.financial.domain.expections.DomainException
 import com.financial.domain.wallet.Wallet
 import com.financial.domain.wallet.WalletGateway
@@ -29,12 +30,13 @@ class WalletCreateUseCaseTest : UseCaseTest() {
     fun givenValidParam_whenCallsCreateWallet_shouldReturnNewWallet() {
         //
         val expectedName = "jack"
+        val expectedAccountId = AccountID().toString()
 
         Mockito.`when`(this.gateway.create(any()))
             .thenAnswer { it.arguments[0] }
 
         //when
-        val result = this.useCase.execute(Input(expectedName))
+        val result = this.useCase.execute(Input(expectedName, expectedAccountId))
 
         //then
         val captor = argumentCaptor<Wallet>()
@@ -43,6 +45,7 @@ class WalletCreateUseCaseTest : UseCaseTest() {
 
         assertNotNull(result.id())
         assertEquals(expectedName, captor.firstValue.name)
+        assertEquals(expectedAccountId, captor.firstValue.accountId.toString())
     }
 
 
@@ -50,10 +53,11 @@ class WalletCreateUseCaseTest : UseCaseTest() {
     fun givenInvalidParam_whenCallsCreateWallet_shouldReturnError() {
         //
         val expectedName = ""
+        val expectedAccountId = AccountID().toString()
 
         //when
         val actualError = assertFailsWith(DomainException::class) {
-            this.useCase.execute(Input(expectedName))
+            this.useCase.execute(Input(expectedName, expectedAccountId))
         }
 
         //then
@@ -61,7 +65,8 @@ class WalletCreateUseCaseTest : UseCaseTest() {
     }
 
 
-    data class Input(val name: String) : WalletCreateUseCase.Input {
+    data class Input(val name: String, val accountId: String) : WalletCreateUseCase.Input {
         override fun name(): String = this.name
+        override fun accountId(): String = this.accountId
     }
 }

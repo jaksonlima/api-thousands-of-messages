@@ -1,5 +1,6 @@
 package com.financial.domain
 
+import com.financial.domain.account.AccountID
 import com.financial.domain.wallet.Wallet
 import com.financial.domain.wallet.WalletID
 import java.time.Instant
@@ -12,8 +13,10 @@ object Fixture {
             WalletID(),
             "john",
             true,
+            AccountID(),
             now,
-            now
+            now,
+            null
         )
     }
 

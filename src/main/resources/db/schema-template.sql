@@ -5,6 +5,7 @@ create table wallet (
     account_id varchar(36) not null,
     created_at timestamp without time zone not null default current_timestamp,
     updated_at timestamp without time zone not null default current_timestamp,
+    deleted_at timestamp,
     constraint fk_wallet_account foreign key (account_id) references public.account (id)
 );
 

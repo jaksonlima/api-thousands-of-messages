@@ -1,6 +1,7 @@
 package com.financial.domain.wallet
 
 import com.financial.domain.UnitTest
+import com.financial.domain.account.AccountID
 import com.financial.domain.expections.DomainException
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
@@ -15,14 +16,16 @@ class WalletTest : UnitTest() {
     fun givenValidParams_whenCreate_shouldReturnValidIt() {
         //given
         val expectedName = "jack"
+        val expectedAccountId = AccountID()
 
         //when
-        val wallet = Wallet.create(expectedName)
+        val wallet = Wallet.create(expectedName, expectedAccountId)
 
         //then
         assertNotNull(wallet.id())
         assertEquals(expectedName, wallet.name)
         assertTrue(wallet.active)
+        assertEquals(wallet.accountId, expectedAccountId)
         assertNotNull(wallet.createdAt)
         assertNotNull(wallet.updatedAt)
         assertNull(wallet.deletedAt)
@@ -32,10 +35,11 @@ class WalletTest : UnitTest() {
     fun givenInvalidParams_whenCreate_shouldReturnError() {
         //given
         val expectedName = ""
+        val expectedAccountId = AccountID()
 
         //when
         val actualError = Assertions.assertThrows(DomainException::class.java)
-        { Wallet.create(expectedName) }
+        { Wallet.create(expectedName, expectedAccountId) }
 
         //then
         assertTrue(actualError.errors.isNotEmpty())
