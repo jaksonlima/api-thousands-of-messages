@@ -13,12 +13,12 @@ class AccountUseCaseConfig(
 
     @Bean
     fun accountCreateUseCase(): AccountCreateUseCase {
-        return AccountCreateUseCase(accountGateway)
+        return AccountCreateUseCase(this.accountGateway)
     }
 
     @Bean
     fun accountGetUseCase(): AccountGetUseCase {
-        return AccountGetUseCase(accountGateway)
+        return AccountGetUseCase(this.accountGateway)
     }
 
 }

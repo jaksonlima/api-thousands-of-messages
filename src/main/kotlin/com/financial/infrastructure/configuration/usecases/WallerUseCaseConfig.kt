@@ -13,11 +13,11 @@ class WallerUseCaseConfig(
 
     @Bean
     fun createWalletUseCase(): WalletCreateUseCase {
-        return WalletCreateUseCase(walletGateway)
+        return WalletCreateUseCase(this.walletGateway)
     }
 
     @Bean
     fun getWalletUseCase(): WalletGetUseCase {
-        return WalletGetUseCase(walletGateway)
+        return WalletGetUseCase(this.walletGateway)
     }
 }

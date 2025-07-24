@@ -12,7 +12,7 @@ class TenantUseCaseConfig(
 
     @Bean
     fun tenantCreateUseCase(): TenantCreateUseCase {
-        return TenantCreateUseCase(tenantGateway)
+        return TenantCreateUseCase(this.tenantGateway)
     }
 
 }

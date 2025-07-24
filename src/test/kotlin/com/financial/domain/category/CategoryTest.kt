@@ -4,7 +4,6 @@ import com.financial.domain.UnitTest
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
-import kotlin.test.assertNull
 
 
 class CategoryTest : UnitTest() {
