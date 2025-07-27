@@ -23,7 +23,7 @@ class CategoryFindPageUseCase(
     }
 
     interface Input {
-        fun name(): String
+        fun name(): String?
         fun page(): Int
         fun size(): Int
     }

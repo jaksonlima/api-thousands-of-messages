@@ -1,6 +1,7 @@
 package com.financial.infrastructure.configuration.usecases
 
 import com.financial.application.category.CategoryCreateUseCase
+import com.financial.application.category.CategoryFindPageUseCase
 import com.financial.domain.category.CategoryGateway
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -13,5 +14,10 @@ class CategoryUseCaseConfig(
     @Bean
     fun categoryCreateUseCase(): CategoryCreateUseCase {
         return CategoryCreateUseCase(this.categoryGateway)
+    }
+
+    @Bean
+    fun categoryFindPageUseCase(): CategoryFindPageUseCase {
+        return CategoryFindPageUseCase(this.categoryGateway)
     }
 }

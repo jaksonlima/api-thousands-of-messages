@@ -27,11 +27,18 @@ content-type: application/json
 ###-CATEGORIES
 PUT http://localhost:8081/categories/
 content-type: application/json
-x-tenant: 2427855323f744bda5e33702c2d05ac2
+x-tenant: ce2afbb9572849a7abcc8e5778b218d3
 
 {
   "name": "eletric"
 }
+
+
+
+###-CATEGORIES-FIND-PAGE
+GET http://localhost:8081/categories/page?name=e
+content-type: application/json
+x-tenant: ce2afbb9572849a7abcc8e5778b218d3
 
 
 

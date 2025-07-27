@@ -31,6 +31,9 @@ class HibernateConfig(
         tenantIdentifierResolver: CurrentTenantIdentifierResolver<String>
     ): LocalContainerEntityManagerFactoryBean {
         val properties = HashMap<String, Any>(jpaProperties.properties)
+        properties["hibernate.show_sql"] = jpaProperties.isShowSql
+        properties["hibernate.format_sql"] = jpaProperties.isShowSql
+        properties["hibernate.hbm2ddl.auto"] = jpaProperties.isGenerateDdl
         properties[Environment.MULTI_TENANT_CONNECTION_PROVIDER] = tenantConnectionProvider
         properties[Environment.MULTI_TENANT_IDENTIFIER_RESOLVER] = tenantIdentifierResolver
 
@@ -41,5 +44,12 @@ class HibernateConfig(
             jpaVendorAdapter = jpaVendorAdapter()
             setJpaPropertyMap(properties)
         }
+    }
+
+    fun loadingJpaProperties() {
+//        jpaProperties.
+//        properties["hibernate.show_sql"] = true
+//        properties["hibernate.format_sql"] = true
+//        properties["hibernate.hbm2ddl.auto"] = "none"
     }
 }

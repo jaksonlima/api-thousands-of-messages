@@ -1,9 +1,12 @@
 package com.financial.infrastructure.api.controllers
 
 import com.financial.application.category.CategoryCreateUseCase
+import com.financial.application.category.CategoryFindPageUseCase
+import com.financial.domain.pagination.Pagination
 import com.financial.infrastructure.api.CategoryAPI
 import com.financial.infrastructure.category.models.CreateRequest
 import com.financial.infrastructure.category.models.CreateResponse
+import com.financial.infrastructure.category.models.FindPageRequest
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
 import java.net.URI
@@ -11,6 +14,7 @@ import java.net.URI
 @RestController
 class CategoryController(
     private val categoryCreateUseCase: CategoryCreateUseCase,
+    private val categoryFindPageUseCase: CategoryFindPageUseCase,
 ) : CategoryAPI {
 
     override fun create(category: CreateRequest): ResponseEntity<CreateResponse> {
@@ -18,6 +22,22 @@ class CategoryController(
 
         return ResponseEntity.created(URI.create("/categories/${result.id()}"))
             .body(CreateResponse.from(result))
+    }
+
+    override fun findPage(
+        name: String?,
+        page: Int,
+        size: Int
+    ): ResponseEntity<Pagination<CategoryFindPageUseCase.Output>> {
+        val request = FindPageRequest(
+            name = name,
+            page = page,
+            size = size,
+        )
+
+        val result = this.categoryFindPageUseCase.execute(request)
+
+        return ResponseEntity.ok(result)
     }
 
 }

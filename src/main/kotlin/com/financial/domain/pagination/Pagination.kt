@@ -1,17 +1,19 @@
 package com.financial.domain.pagination
 
 class Pagination<T>(
-    val page: Int,
-    val size: Int,
-    val data: List<T>
+    val currentPage: Int,
+    val totalPages: Int,
+    val totalItems: Long,
+    val items: List<T>
 ) {
 
     fun <R> map(map: (item: T) -> R): Pagination<R> {
-        val result = data.map(map)
+        val result = items.map(map)
         return Pagination(
-            page = this.page,
-            size = this.size,
-            data = result
+            currentPage = this.currentPage,
+            totalPages = this.totalPages,
+            totalItems = this.totalItems,
+            items = result
         );
     }
 }
