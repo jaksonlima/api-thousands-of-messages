@@ -30,13 +30,12 @@ content-type: application/json
 x-tenant: ce2afbb9572849a7abcc8e5778b218d3
 
 {
-  "name": "eletric"
+  "name": "driver"
 }
 
 
-
 ###-CATEGORIES-FIND-PAGE
-GET http://localhost:8081/categories/page?name=e
+GET http://localhost:8081/categories/page
 content-type: application/json
 x-tenant: ce2afbb9572849a7abcc8e5778b218d3
 

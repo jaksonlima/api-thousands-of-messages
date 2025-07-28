@@ -3,6 +3,8 @@ package com.financial.infrastructure.configuration.multitenant
 import org.hibernate.HibernateException
 import org.hibernate.cfg.AvailableSettings
 import org.hibernate.engine.jdbc.connections.spi.MultiTenantConnectionProvider
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.boot.autoconfigure.orm.jpa.HibernatePropertiesCustomizer
 import org.springframework.stereotype.Component
 import java.sql.Connection
@@ -13,6 +15,10 @@ import javax.sql.DataSource
 class TenantConnectionProvider(
     private val dataSource: DataSource,
 ) : MultiTenantConnectionProvider<String>, HibernatePropertiesCustomizer {
+
+    companion object {
+        private val log: Logger = LoggerFactory.getLogger(TenantConnectionProvider::class.java)
+    }
 
     override fun getAnyConnection(): Connection {
         return dataSource.connection;
@@ -27,6 +33,7 @@ class TenantConnectionProvider(
         try {
             connection.createStatement().execute("""set search_path to "$tenantIdentifier"""")
         } catch (e: SQLException) {
+            log.error(e.message)
             throw HibernateException("Unable to change to schema $tenantIdentifier")
         }
         return connection
@@ -37,7 +44,8 @@ class TenantConnectionProvider(
             connection.use {
                 connection.createStatement().execute("""set search_path to "$tenantIdentifier"""")
             }
-        } catch (_: SQLException) {
+        } catch (e: SQLException) {
+            log.error(e.message)
             throw HibernateException("Unable to connect to schema $tenantIdentifier")
         }
     }

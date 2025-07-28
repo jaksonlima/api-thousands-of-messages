@@ -33,10 +33,9 @@ class HibernateConfig(
         val properties = HashMap<String, Any>(jpaProperties.properties)
         properties["hibernate.show_sql"] = jpaProperties.isShowSql
         properties["hibernate.format_sql"] = jpaProperties.isShowSql
-        properties["hibernate.hbm2ddl.auto"] = jpaProperties.isGenerateDdl
+        properties["hibernate.hbm2ddl.auto"] = "none"
         properties[Environment.MULTI_TENANT_CONNECTION_PROVIDER] = tenantConnectionProvider
         properties[Environment.MULTI_TENANT_IDENTIFIER_RESOLVER] = tenantIdentifierResolver
-
 
         return LocalContainerEntityManagerFactoryBean().apply {
             setDataSource(dataSource)

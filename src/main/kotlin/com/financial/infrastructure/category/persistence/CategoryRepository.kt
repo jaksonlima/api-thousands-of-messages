@@ -12,7 +12,7 @@ interface CategoryRepository : JpaRepository<CategoryJpaEntity, String> {
     @Query(
         """
     SELECT c FROM Category c
-    WHERE (:name IS NULL OR LOWER(c.name) LIKE LOWER(CONCAT('%', :name, '%')))
+    WHERE (:name IS NULL OR LOWER(c.name) LIKE LOWER(CONCAT('%', CAST(COALESCE(:name, '') AS string), '%')))
     """
     )
     fun findPageByName(@Param("name") name: String?, pageable: Pageable): Page<CategoryJpaEntity>
