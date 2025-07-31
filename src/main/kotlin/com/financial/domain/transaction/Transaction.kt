@@ -9,7 +9,7 @@ class Transaction(
     id: TransactionID = TransactionID(),
     val amountType: AmountType,
     val money: Money,
-    val description: String,
+    val name: String,
     val walletId: WalletID,
     val categoryId: CategoryID,
     val createdAt: Instant,
@@ -20,7 +20,7 @@ class Transaction(
         assertArgumentNotNull(id) { "'id' should not be null or empty." }
         assertArgumentNotNull(amountType) { "'amountType' should not be null." }
         assertArgumentNotNull(money) { "'money' should not be null." }
-        assertArgumentNotEmpty(description) { "'description' should not be null or empty." }
+        assertArgumentNotEmpty(name) { "'name' should not be null or empty." }
         assertArgumentNotNull(walletId) { "'walletId' should not be null." }
         assertArgumentNotNull(categoryId) { "'categoryId' should not be null." }
         assertArgumentNotNull(createdAt) { "'createdAt' should not be null." }
@@ -31,7 +31,7 @@ class Transaction(
         fun create(
             amountType: AmountType,
             money: Money,
-            description: String,
+            name: String,
             walletId: WalletID,
             categoryId: CategoryID,
         ): Transaction {
@@ -39,7 +39,7 @@ class Transaction(
             return Transaction(
                 amountType = amountType,
                 money = money,
-                description = description,
+                name = name,
                 walletId = walletId,
                 categoryId = categoryId,
                 createdAt = now,

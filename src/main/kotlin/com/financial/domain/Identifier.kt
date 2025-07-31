@@ -1,5 +1,9 @@
 package com.financial.domain
 
-interface Identifier<T> : ValueObject {
-    fun value(): T
+abstract class Identifier<T> : ValueObject {
+
+    abstract val id: T
+
+    fun value(): T = this.id
+
 }

@@ -2,12 +2,14 @@ package com.financial.infrastructure.category
 
 import com.financial.domain.category.Category
 import com.financial.domain.category.CategoryGateway
+import com.financial.domain.category.CategoryID
 import com.financial.domain.pagination.Pagination
 import com.financial.infrastructure.category.persistence.CategoryJpaEntity
 import com.financial.infrastructure.category.persistence.CategoryRepository
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Component
+import java.util.Optional
 
 @Component
 class CategoryPostgresGateway(
@@ -32,5 +34,9 @@ class CategoryPostgresGateway(
             totalItems = pageResult.totalElements,
             items = pageResult.content.map { it.toDomain() }
         )
+    }
+
+    override fun findById(categoryId: CategoryID): Optional<Category> {
+        TODO("Not yet implemented")
     }
 }

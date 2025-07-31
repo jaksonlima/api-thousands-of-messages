@@ -22,16 +22,17 @@ class TransactionTest : UnitTest() {
         val result = Transaction.create(
             amountType = expectedAmountType,
             money = expectedMoney,
-            description = expectedDescription,
+            name = expectedDescription,
             walletId = expectedWalletId,
             categoryId = expectedCategoryId
         )
+        val toString = result.id().toString()
 
         //then
         assertNotNull(result.id())
         assertEquals(expectedAmountType, result.amountType)
         assertEquals(expectedMoney, result.money)
-        assertEquals(expectedDescription, result.description)
+        assertEquals(expectedDescription, result.name)
         assertEquals(expectedWalletId, result.walletId)
         assertEquals(expectedCategoryId, result.categoryId)
         assertNotNull(result.createdAt)
@@ -53,7 +54,7 @@ class TransactionTest : UnitTest() {
             Transaction.create(
                 amountType = expectedAmountType,
                 money = expectedMoney,
-                description = expectedDescription,
+                name = expectedDescription,
                 walletId = expectedWalletId,
                 categoryId = expectedCategoryId
             )
