@@ -1,7 +1,8 @@
-package com.financial.infrastructure.configuration.properties
+package com.financial.infrastructure
 
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.context.annotation.Configuration
+
 
 @Configuration(proxyBeanMethods = false)
 @ConfigurationProperties(prefix = "kafka")

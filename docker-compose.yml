@@ -1,59 +1,59 @@
 services:
-  postgres:
+  postgres-batch:
     image: postgres:15
-    container_name: postgres_local
+    container_name: postgres-batch
     restart: always
     environment:
-      POSTGRES_DB: financial
-      POSTGRES_USER: financial
+      POSTGRES_DB: send-emails-batch
+      POSTGRES_USER: send-emails-batch
       POSTGRES_PASSWORD: 12345
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
-  zookeeper:
+  zookeeper-batch:
     image: confluentinc/cp-zookeeper:7.5.0
-    container_name: zookeeper
+    container_name: zookeeper-batch
     ports:
       - "2181:2181"
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
 
-  kafka:
+  kafka-batch:
     image: confluentinc/cp-kafka:7.5.0
-    container_name: kafka
+    container_name: kafka-batch
     ports:
       - "9092:9092"
       - "9094:9094"
     environment:
       KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper-batch:2181
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT,OUTSIDE:PLAINTEXT
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092,OUTSIDE://host.docker.internal:9094
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-batch:29092,PLAINTEXT_HOST://localhost:9092,OUTSIDE://host.docker.internal:9094
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
-      KAFKA_CONFLUENT_LICENSE_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_CONFLUENT_LICENSE_TOPIC_REPLICATION_FACTOR: 11
       KAFKA_CONFLUENT_BALANCER_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
       CONFLUENT_METRICS_ENABLE: 'false'
       CONFLUENT_SUPPORT_CUSTOMER_ID: 'anonymous'
     depends_on:
-      - zookeeper
+      - zookeeper-batch
 
-  kafka-ui:
+  kafka-ui-batch:
     image: provectuslabs/kafka-ui:latest
-    container_name: kafka-ui
+    container_name: kafka-ui-batch
     ports:
       - "8080:8080"
     environment:
       KAFKA_CLUSTERS_0_NAME: local-kafka
-      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
-      KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka-batch:29092
+      KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper-batch:2181
     depends_on:
-      - kafka
+      - kafka-batch
 
 volumes:
   postgres_data:

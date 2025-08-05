@@ -1,22 +1,21 @@
-package com.financial.infrastructure.configuration
+package com.financial.infrastructure
 
-import com.financial.infrastructure.configuration.annotations.AccountTopic
-import com.financial.infrastructure.configuration.properties.KafkaProperties
-import com.financial.infrastructure.kafka.models.Topic
 import org.apache.kafka.clients.admin.NewTopic
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.clients.producer.ProducerConfig
 import org.apache.kafka.common.serialization.StringDeserializer
 import org.apache.kafka.common.serialization.StringSerializer
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory
 import org.springframework.kafka.config.KafkaListenerContainerFactory
-import org.springframework.kafka.core.*
+import org.springframework.kafka.core.ConsumerFactory
+import org.springframework.kafka.core.DefaultKafkaConsumerFactory
+import org.springframework.kafka.core.DefaultKafkaProducerFactory
+import org.springframework.kafka.core.KafkaTemplate
+import org.springframework.kafka.core.ProducerFactory
 import org.springframework.kafka.listener.ConcurrentMessageListenerContainer
 import org.springframework.kafka.support.serializer.JsonSerializer
-
 
 @Configuration(proxyBeanMethods = false)
 class KafkaConfig(
@@ -24,20 +23,15 @@ class KafkaConfig(
 ) {
 
     @Bean
-    @AccountTopic
-    fun accountTopic(
-        @Value("\${kafka.producers.account.topic}")
-        topic: String
-    ): Topic {
-        return Topic(topic);
+    fun startSendEmailsTopic(
+    ): NewTopic {
+        return NewTopic("start.send.emails", 1, 1)
     }
 
     @Bean
-    fun accountCreatedTopic(
-        @AccountTopic
-        topic: Topic
+    fun processingSendEmailsTopic(
     ): NewTopic {
-        return NewTopic(topic.name, 1, 1)
+        return NewTopic("processing.send.email", 1, 1)
     }
 
     @Bean
@@ -45,8 +39,12 @@ class KafkaConfig(
         val config = mapOf(
             ProducerConfig.BOOTSTRAP_SERVERS_CONFIG to properties.bootstrapServers,
             ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG to StringSerializer::class.java,
-            ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG to JsonSerializer::class.java
+            ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG to JsonSerializer::class.java,
+            ProducerConfig.BATCH_SIZE_CONFIG to 32768,         // 32 KB
+            ProducerConfig.LINGER_MS_CONFIG to 10,             // 10 ms
+            ProducerConfig.BUFFER_MEMORY_CONFIG to 33554432    // 32 MB
         )
+
         return DefaultKafkaProducerFactory(config)
     }
 
