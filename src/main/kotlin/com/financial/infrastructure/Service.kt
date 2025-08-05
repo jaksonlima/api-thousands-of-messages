@@ -1,37 +1,33 @@
 package com.financial.infrastructure
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.http.ResponseEntity
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.kafka.listener.adapter.ConsumerRecordMetadata
 import org.springframework.messaging.handler.annotation.Payload
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RestController
-import java.util.UUID
+import org.springframework.web.bind.annotation.*
+import java.time.Duration
+import java.time.Instant
+import java.util.*
 import javax.sql.DataSource
 
 @RestController
 @RequestMapping(value = ["api"])
-class Controller(
+class Service(
     private val kafkaTemplate: KafkaTemplate<String, String>,
     private val dataSource: DataSource,
-    private val objectMapper: ObjectMapper
+    private val objectMapper: ObjectMapper,
+    private val redisTemplate: RedisTemplate<String, String>
 ) {
 
     companion object {
-        private val log: Logger = LoggerFactory.getLogger(Controller::class.java)
+        private val log: Logger = LoggerFactory.getLogger(Service::class.java)
+        const val DEDUP_KEY_PREFIX: String = "kafka:dedup:"
     }
 
     @GetMapping(
@@ -64,11 +60,38 @@ class Controller(
         properties = ["auto.offset.reset=earliest"]
     )
     fun onMessageSendEmails(@Payload(required = false) payload: String?, metadata: ConsumerRecordMetadata) {
-        log.info("received [message: $payload] [topic: ${metadata.topic()}] [partition: ${metadata.partition()}]")
+        log.info("send received [message: $payload] [topic: ${metadata.topic()}] [partition: ${metadata.partition()}]")
 
         if (payload?.trim('"') == "true") {
             CoroutineScope(Dispatchers.IO).launch {
                 sendEmails()
+            }
+        }
+    }
+
+    @KafkaListener(
+        concurrency = "1",
+        containerFactory = "kafkaListenerFactory",
+        topics = ["processing.send.email"],
+        groupId = "processing.send.email.group",
+        id = "processing.send.email.id",
+        properties = ["auto.offset.reset=earliest"]
+    )
+    fun onMessageProcessingSendEmail(@Payload(required = false) payload: String?, metadata: ConsumerRecordMetadata) {
+        log.info("processing received [message: $payload] [topic: ${metadata.topic()}] [partition: ${metadata.partition()}]")
+
+        if (payload !== null) {
+            val map = Json.readTree(payload, Map::class.java) as Map<String, Any?>
+            val id = map["id"] as String
+
+            val dedupKey = DEDUP_KEY_PREFIX + id
+
+            val isNew = this.redisTemplate.opsForValue()
+                .setIfAbsent(dedupKey, Instant.now().toString(), Duration.ofHours(10L))
+
+            if (isNew == true) {
+                log.info("Redis not exists [key: $dedupKey]")
+                updateEmailsUpdatedAt(mutableListOf(map))
             }
         }
     }
@@ -118,7 +141,6 @@ class Controller(
             if (emails.isEmpty()) break
 
             sendEmailsTopic(emails)
-            updateEmailsUpdatedAt(emails)
 
             delay(delayMillis.coerceAtMost(32000))
 
