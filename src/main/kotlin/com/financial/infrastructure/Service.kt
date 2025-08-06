@@ -1,6 +1,5 @@
 package com.financial.infrastructure
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import kotlinx.coroutines.*
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -21,38 +20,42 @@ import javax.sql.DataSource
 class Service(
     private val kafkaTemplate: KafkaTemplate<String, String>,
     private val dataSource: DataSource,
-    private val objectMapper: ObjectMapper,
     private val redisTemplate: RedisTemplate<String, String>
 ) {
 
     companion object {
         private val log: Logger = LoggerFactory.getLogger(Service::class.java)
         const val DEDUP_KEY_PREFIX: String = "kafka:dedup:"
+        val STATUS: List<String> = listOf("success", "processing", "failure")
     }
 
     @GetMapping(
         value = ["/generate-emails"],
     )
     fun generateRegistries(
-        @RequestParam("quantity", required = false, defaultValue = "10000") quantity: Int
+        @RequestParam("quantity", required = false, defaultValue = "1000") quantity: Int
     ): ResponseEntity<String> {
         generateEmails(quantity)
         log.info("generated emails [quantity: $quantity]")
         return ResponseEntity.ok().build()
     }
 
+    data class StartRequest(val limit: String, val frequencyDay: String)
+
     @PostMapping(
         value = ["/start-send-emails"],
     )
-    fun startSendEmails(): ResponseEntity<String> {
-        this.kafkaTemplate.send("start.send.emails", "true")
+    fun startSendEmails(@RequestBody start: StartRequest): ResponseEntity<String> {
+        val message = Json.mapper().writeValueAsString(start)
+        this.kafkaTemplate.send("start.send.emails", "1", message)
+        this.kafkaTemplate.send("start.send.emails", "2", message)
         log.info("started [message: true] [topic: start.send.emails]")
         return ResponseEntity.ok().build()
     }
 
     @OptIn(DelicateCoroutinesApi::class)
     @KafkaListener(
-        concurrency = "1",
+        concurrency = "2",
         containerFactory = "kafkaListenerFactory",
         topics = ["start.send.emails"],
         groupId = "start.send.emails.group",
@@ -62,15 +65,17 @@ class Service(
     fun onMessageSendEmails(@Payload(required = false) payload: String?, metadata: ConsumerRecordMetadata) {
         log.info("send received [message: $payload] [topic: ${metadata.topic()}] [partition: ${metadata.partition()}]")
 
-        if (payload?.trim('"') == "true") {
+        if (payload != null) {
+            val start = Json.readTree(payload, StartRequest::class.java)
+
             CoroutineScope(Dispatchers.IO).launch {
-                sendEmails()
+                sendEmails(start.frequencyDay.toInt(), start.frequencyDay.toInt())
             }
         }
     }
 
     @KafkaListener(
-        concurrency = "1",
+        concurrency = "2",
         containerFactory = "kafkaListenerFactory",
         topics = ["processing.send.email"],
         groupId = "processing.send.email.group",
@@ -83,15 +88,26 @@ class Service(
         if (payload !== null) {
             val map = Json.readTree(payload, Map::class.java) as Map<String, Any?>
             val id = map["id"] as String
-
             val dedupKey = DEDUP_KEY_PREFIX + id
 
-            val isNew = this.redisTemplate.opsForValue()
-                .setIfAbsent(dedupKey, Instant.now().toString(), Duration.ofHours(10L))
+            try {
+                val isNew = this.redisTemplate.opsForValue()
+                    .setIfAbsent(dedupKey, Instant.now().toString(), Duration.ofMinutes(1L))
 
-            if (isNew == true) {
-                log.info("Redis not exists [key: $dedupKey]")
-                updateEmailsUpdatedAt(mutableListOf(map))
+                if (isNew == true) {
+                    log.info("Redis not exists [key: $dedupKey]")
+                    updateEmailsUpdatedAt(STATUS[0], mutableListOf(map))
+                } else {
+                    log.warn("Redis exists [key: $dedupKey]")
+                }
+
+            } catch (e: Exception) {
+                this.redisTemplate.delete(dedupKey)
+
+                updateEmailsUpdatedAt(STATUS[3], mutableListOf(map))
+
+                log.warn("Redis error [message: ${e.message}]")
+                throw e
             }
         }
     }
@@ -102,8 +118,6 @@ class Service(
             VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP, null)
         """.trimIndent()
 
-        val statusList = listOf("success", "processing", "failure")
-
         dataSource.connection.use { conn ->
             conn.autoCommit = false
 
@@ -112,7 +126,7 @@ class Service(
                     repeat(quantity) { i ->
                         val id = UUID.randomUUID().toString()
                         val email = "user$i@example.com"
-                        val status = statusList.random()
+                        val status = "processing"
                         val active = true
 
                         stmt.setObject(1, id)
@@ -131,13 +145,14 @@ class Service(
         }
     }
 
-    fun sendEmails() = runBlocking {
+    fun sendEmails(frequencyDay: Int = 7, limit: Int = 100) = runBlocking {
         var delayMillis = 1000L
         val multiplier = 2.0
-        var totalRecordSent = 1000
+        var totalRecordSent = limit
 
         while (true) {
-            val emails = emailsPagination(7, 1000, 0)
+            val emails = emailsPagination(frequencyDay, limit, 0)
+
             if (emails.isEmpty()) break
 
             sendEmailsTopic(emails)
@@ -148,7 +163,7 @@ class Service(
 
             log.info("Get Emails [total record sent: $totalRecordSent]")
 
-            totalRecordSent += 1000
+            totalRecordSent += limit
         }
     }
 
@@ -191,23 +206,24 @@ class Service(
         if (emails.isEmpty()) return;
 
         for (emailMap in emails) {
-            val jsonString = objectMapper.writeValueAsString(emailMap)
+            val jsonString = Json.mapper().writeValueAsString(emailMap)
 
             this.kafkaTemplate.send("processing.send.email", jsonString)
         }
     }
 
-    fun updateEmailsUpdatedAt(emails: MutableList<Map<String, Any?>>) {
+    fun updateEmailsUpdatedAt(status: String, emails: MutableList<Map<String, Any?>>) {
         if (emails.isEmpty()) return;
 
-        val sql = "UPDATE email SET updated_at = CURRENT_TIMESTAMP WHERE id = ?"
+        val sql = "UPDATE email SET updated_at = CURRENT_TIMESTAMP, status = ? WHERE id = ?"
 
         dataSource.connection.use { conn ->
             conn.autoCommit = false
             conn.prepareStatement(sql).use { stmt ->
                 for (emailMap in emails) {
                     val id = emailMap["id"] as? String
-                    stmt.setObject(1, id)
+                    stmt.setObject(1, status)
+                    stmt.setObject(2, id)
                     stmt.addBatch()
                 }
                 stmt.executeBatch()
@@ -215,4 +231,5 @@ class Service(
             conn.commit()
         }
     }
+
 }

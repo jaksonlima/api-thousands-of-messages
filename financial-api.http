@@ -1,10 +1,14 @@
 
 
 ###-GENERATE-EMAILS
-GET http://localhost:8081/api/generate-emails?quantity=10
+GET http://localhost:8081/api/generate-emails?quantity=11
 content-type: application/json
 
 ###-TEST
 POST http://localhost:8081/api/start-send-emails
 content-type: application/json
 
+{
+    "limit": "2",
+    "frequencyDay": "7"
+}

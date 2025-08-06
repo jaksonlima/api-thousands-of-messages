@@ -22,13 +22,13 @@ class KafkaConfig(
     @Bean
     fun startSendEmailsTopic(
     ): NewTopic {
-        return NewTopic("start.send.emails", 1, 1)
+        return NewTopic("start.send.emails", 2, 1)
     }
 
     @Bean
     fun processingSendEmailsTopic(
     ): NewTopic {
-        return NewTopic("processing.send.email", 1, 1)
+        return NewTopic("processing.send.email", 2, 1)
     }
 
     @Bean
