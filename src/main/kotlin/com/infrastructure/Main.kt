@@ -14,3 +14,4 @@ fun main(args: Array<String>) {
     runApplication<Main>(*args)
     log.info("[step:inittialized] [id:2] Spring inicializado..");
 }
+
