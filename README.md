@@ -8,6 +8,6 @@
 - http://localhost:8080/
 ![img.png](img.png)
 - 
-### UI Kafka
+### UI Redis
 - http://localhost:8080/
   ![img_1.png](img_1.png)
