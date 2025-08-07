@@ -1,4 +1,4 @@
-package com.financial.infrastructure
+package com.infrastructure
 
 import org.apache.kafka.clients.admin.NewTopic
 import org.apache.kafka.clients.consumer.ConsumerConfig

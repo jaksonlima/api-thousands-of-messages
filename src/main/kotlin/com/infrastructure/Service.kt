@@ -1,4 +1,4 @@
-package com.financial.infrastructure
+package com.infrastructure
 
 import kotlinx.coroutines.*
 import org.slf4j.Logger

@@ -1,4 +1,4 @@
-package com.financial.infrastructure
+package com.infrastructure
 
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
